@@ -1,4 +1,4 @@
-"""Price adapter: OHLCV + basic indicators."""
+"""Price adapter: OHLCV + basic indicators. Normalizes ccxt-style tickers to yfinance."""
 from __future__ import annotations
 
 from typing import Any
@@ -6,6 +6,13 @@ from typing import Any
 
 class SchemaError(Exception):
     pass
+
+
+def _to_yfinance_ticker(asset: str) -> str:
+    # Map ccxt-style BTC/USDT -> yfinance BTC-USD
+    if "/" in asset:
+        return asset.replace("/", "-")
+    return asset
 
 
 async def fetch(assets: list[str]) -> dict[str, Any]:
@@ -16,7 +23,8 @@ async def fetch(assets: list[str]) -> dict[str, Any]:
 
     for asset in assets:
         try:
-            ticker = yf.Ticker(asset)
+            ticker_symbol = _to_yfinance_ticker(asset)
+            ticker = yf.Ticker(ticker_symbol)
             hist = ticker.history(period="7d", interval="1h")
             prices = hist["Close"].dropna().tolist() if not hist.empty else []
             indicators: dict[str, Any] = {}
@@ -31,7 +39,7 @@ async def fetch(assets: list[str]) -> dict[str, Any]:
             last_price = prices[-1] if prices else None
             result[asset] = {"schema_version": schema_version, "price": last_price, "indicators": indicators}
         except Exception as exc:
-            raise RuntimeError(f"price adapter failed for {asset}: {exc}") from exc
+            raise RuntimeError(f"price adapter failed for {asset} ({ticker_symbol}): {exc}") from exc
     return result
 
 
