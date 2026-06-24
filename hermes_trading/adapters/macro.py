@@ -18,3 +18,7 @@ async def fetch(assets: list[str]) -> dict[str, Any]:
             "rates_change_bps": 0.0,
         }
     return result
+
+
+async def fetch_macro(assets: list[str]) -> dict[str, Any]:
+    return await fetch(assets)

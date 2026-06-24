@@ -33,3 +33,7 @@ async def fetch(assets: list[str]) -> dict[str, Any]:
         except Exception as exc:
             raise RuntimeError(f"price adapter failed for {asset}: {exc}") from exc
     return result
+
+
+async def fetch_price(assets: list[str]) -> dict[str, Any]:
+    return await fetch(assets)

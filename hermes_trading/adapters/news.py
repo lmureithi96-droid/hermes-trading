@@ -18,3 +18,7 @@ async def fetch(assets: list[str]) -> dict[str, Any]:
             "headlines": [],
         }
     return result
+
+
+async def fetch_news(assets: list[str]) -> dict[str, Any]:
+    return await fetch(assets)

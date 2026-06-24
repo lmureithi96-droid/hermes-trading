@@ -19,3 +19,7 @@ async def fetch(assets: list[str]) -> dict[str, Any]:
             "exchange_outflow": 0.0,
         }
     return result
+
+
+async def fetch_onchain(assets: list[str]) -> dict[str, Any]:
+    return await fetch(assets)
