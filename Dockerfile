@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11-slim as runtime
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -8,4 +8,5 @@ COPY hermes_trading ./hermes_trading
 COPY state ./state
 RUN uv sync
 ENV HERMES_TRADING_MODE=paper
-CMD ["uv", "run", "python", "-m", "hermes_trading.run"]
+EXPOSE 8787
+CMD ["uv", "run", "python", "-m", "hermes_trading.web_ui"]
